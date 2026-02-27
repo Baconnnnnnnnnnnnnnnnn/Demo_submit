@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Chi tiet nhom</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f6f8fa;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-logo {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all .3s;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, .15);
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: rgba(255, 255, 255, .25);
+            border-left: 4px solid white;
+            padding-left: 11px;
+        }
+
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-text .user-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .user-text .user-role {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 15px;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            font-size: 20px;
+            margin: 0 0 15px;
+            color: #333;
+        }
+
+        .member-list,
+        .request-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .member-list li,
+        .request-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .member-list li:last-child,
+        .request-list li:last-child {
+            border-bottom: none;
+        }
+
+        .member-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .member-badge {
+            background: #d6eaf8;
+            color: #1b4f72;
+            border-radius: 999px;
+            font-size: 12px;
+            padding: 2px 10px;
+        }
+
+        .btn-small {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-small:hover {
+            background: #5568d3;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #1f8a4d;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-error {
+            background: #fadbd8;
+            color: #c0392b;
+            border: 1px solid #e74c3c;
+        }
+
+        .alert-success {
+            background: #d4efdf;
+            color: #186a3b;
+            border: 1px solid #27ae60;
+        }
+
+        .invite-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .invite-form input {
+            width: 220px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+
+        .hint {
+            color: #666;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        .row-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .back-link {
+            text-decoration: none;
+            font-size: 14px;
+            color: #667eea;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-logo" th:text="${className} ?: 'PMS'">PMS</div>
+            <ul class="nav-menu">
+                <li><a href="/student/group/list" class="nav-link active">Nhom</a></li>
+            </ul>
+        </div>
+
+        <div class="main">
+            <div class="header">
+                <div class="header-left" th:text="${group.groupName}">Ten nhom</div>
+                <div style="display:flex;align-items:center;">
+                    <div class="user-info">
+                        <div class="user-avatar"><img src="/img/user.png" alt=""></div>
+                        <div class="user-text">
+                            <div class="user-name" th:text="${studentName} ?: 'Hoc sinh'">Hoc sinh</div>
+                            <div class="user-role" th:text="${userRole} ?: 'Hoc sinh'">Hoc sinh</div>
+                        </div>
+                    </div>
+                    <form action="/acc/logout" method="get"><button class="logout-btn">Dang xuat</button></form>
+                </div>
+            </div>
+
+            <div class="content">
+                <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+                <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+                <div class="section">
+                    <a class="back-link" href="/student/group/list">← Quay lai danh sach nhom</a>
+                </div>
+
+                <div class="section">
+                    <h2>Thanh vien (<span th:text="${memberCount}">0</span>)</h2>
+                    <ul class="member-list">
+                        <li th:each="m : ${members}">
+                            <div class="member-main">
+                                <strong th:text="${m.fullName}">Ten thanh vien</strong>
+                                <span>(ID: <span th:text="${m.studentId}">1</span>)</span>
+                                <span class="member-badge" th:if="${group.leaderId != null and group.leaderId == m.studentId}">
+                                    Nhom truong
+                                </span>
+                            </div>
+                            <div class="row-actions" th:if="${isLeader and m.studentId != studentId}">
+                                <form method="post" th:action="@{/student/group/{id}/kick(id=${group.groupId})}">
+                                    <input type="hidden" name="studentId" th:value="${m.studentId}" />
+                                    <button class="btn-small btn-danger" type="submit">Kick</button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2>Moi thanh vien</h2>
+                    <form class="invite-form" method="post" th:action="@{/student/group/{id}/invite(id=${group.groupId})}">
+                        <input type="number" name="studentId" min="1" placeholder="Nhap Student ID" required />
+                        <button class="btn-small" type="submit">Gui loi moi</button>
+                    </form>
+                    <div class="hint" th:if="${isLeader}">
+                        Nhom truong moi se duoc them truc tiep vao nhom.
+                    </div>
+                    <div class="hint" th:unless="${isLeader}">
+                        Thanh vien gui loi moi se tao thong bao de nhom truong duyet.
+                    </div>
+                </div>
+
+                <div class="section" th:if="${isLeader}">
+                    <h2>Yeu cau moi cho duyet</h2>
+                    <ul class="request-list" th:if="${pendingRequests != null and pendingRequests.size() > 0}">
+                        <li th:each="req : ${pendingRequests}">
+                            <div>
+                                Moi Student ID <strong th:text="${req.studentId}">0</strong>
+                                <span> (de xuat boi Student ID </span>
+                                <strong th:text="${req.invitedByStudentId}">0</strong>
+                                <span>)</span>
+                            </div>
+                            <div class="row-actions">
+                                <form method="post"
+                                    th:action="@{/student/group/{id}/invite/{invId}/review(id=${group.groupId},invId=${req.invitationId})}">
+                                    <input type="hidden" name="action" value="approve" />
+                                    <button class="btn-small btn-success" type="submit">Duyet</button>
+                                </form>
+                                <form method="post"
+                                    th:action="@{/student/group/{id}/invite/{invId}/review(id=${group.groupId},invId=${req.invitationId})}">
+                                    <input type="hidden" name="action" value="reject" />
+                                    <button class="btn-small btn-danger" type="submit">Tu choi</button>
+                                </form>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="hint" th:if="${pendingRequests == null or pendingRequests.size() == 0}">
+                        Khong co yeu cau moi nao dang cho duyet.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2>Thao tac</h2>
+                    <div th:if="${!isLeader}">
+                        <form method="post" th:action="@{/student/group/{id}/leave(id=${group.groupId})}">
+                            <button class="btn-small btn-danger" type="submit">Roi nhom</button>
+                        </form>
+                    </div>
+                    <div th:if="${isLeader and canDeleteGroup}">
+                        <form method="post" th:action="@{/student/group/{id}/delete(id=${group.groupId})}">
+                            <button class="btn-small btn-danger" type="submit"
+                                onclick="return confirm('Ban chac chan muon xoa nhom?');">
+                                Xoa nhom
+                            </button>
+                        </form>
+                        <div class="hint">Nhom chi con nhom truong nen co the xoa.</div>
+                    </div>
+                    <div class="hint" th:if="${isLeader and !canDeleteGroup}">
+                        Nhom truong khong the roi nhom. Ban co the kick thanh vien, sau do xoa nhom khi chi con 1 minh.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
